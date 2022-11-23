@@ -1,6 +1,5 @@
-# PaperPluginTemplate
+# AutoReloader
 
-## FAQ
+プラグインのjarファイルの変更を検知して自動ロード/リロードするプラグイン
 
-* プロジェクトネーム(プラグイン名を変更したい)
-  settings.gradleのrootProject.nameの値を変更してください.
+[PlugMan](https://github.com/TheBlackEntity/PlugMan/)を必要とする
