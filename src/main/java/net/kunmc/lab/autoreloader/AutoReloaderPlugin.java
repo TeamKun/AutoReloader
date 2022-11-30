@@ -12,11 +12,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public final class AutoReloaderPlugin extends JavaPlugin {
+    private final Map<Path, Long> pathToLastModifiedMap = new HashMap<>();
+
     @Override
     public void onEnable() {
         try {
@@ -39,6 +43,13 @@ public final class AutoReloaderPlugin extends JavaPlugin {
                                           .equalsIgnoreCase("jar")) {
                             return;
                         }
+                        if (pathToLastModifiedMap.getOrDefault(filePath, 0L) == filePath.toFile()
+                                                                                        .lastModified()) {
+                            return;
+                        }
+                        pathToLastModifiedMap.put(filePath,
+                                                  filePath.toFile()
+                                                          .lastModified());
 
                         PluginDescriptionFile descriptionFile;
                         try {
