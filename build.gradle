@@ -30,6 +30,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly name: "patched_1.16.5"
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "com.rylinaux:PlugMan:2.2.9"
 }

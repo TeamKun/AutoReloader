@@ -4,7 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.SimplePluginManager;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -14,7 +14,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -24,14 +23,12 @@ public final class AutoReloaderPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
-            SimplePluginManager pluginManager = ((SimplePluginManager) Bukkit.getPluginManager());
+            Path pluginsDirectory = new File("plugins").toPath();
             PluginLoader pluginLoader = getPluginLoader();
-            Path pluginsDirectory = Optional.ofNullable(pluginManager.pluginsDirectory())
-                                            .orElse(new File("plugins"))
-                                            .toPath();
+            PluginManager pluginManager = Bukkit.getPluginManager();
 
             WatchService watcher = FileSystems.getDefault()
-                                              .newWatchService();
+                    .newWatchService();
             WatchKey watchKey = pluginsDirectory.register(watcher, ENTRY_MODIFY);
 
             new BukkitRunnable() {
@@ -40,16 +37,16 @@ public final class AutoReloaderPlugin extends JavaPlugin {
                     for (WatchEvent<?> e : watchKey.pollEvents()) {
                         Path filePath = pluginsDirectory.resolve((Path) e.context());
                         if (!FilenameUtils.getExtension(filePath.toString())
-                                          .equalsIgnoreCase("jar")) {
+                                .equalsIgnoreCase("jar")) {
                             return;
                         }
                         if (pathToLastModifiedMap.getOrDefault(filePath, 0L) == filePath.toFile()
-                                                                                        .lastModified()) {
+                                .lastModified()) {
                             return;
                         }
                         pathToLastModifiedMap.put(filePath,
-                                                  filePath.toFile()
-                                                          .lastModified());
+                                filePath.toFile()
+                                        .lastModified());
 
                         PluginDescriptionFile descriptionFile;
                         try {
